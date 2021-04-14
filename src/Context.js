@@ -8,6 +8,7 @@ export const useStore = () => {
 
 export const ContextProvider = ({ children }) => {
   const [itemIsDragging, setItemIsDragging] = useState("");
+  const [elements, setElements] = useState([]);
 
   const dragging = (id) => {
     setItemIsDragging(id);
@@ -16,7 +17,7 @@ export const ContextProvider = ({ children }) => {
   const isDrop = (id) => {
     setItemIsDragging("");
   };
-  const value = { dragging, isDrop, itemIsDragging };
+  const value = { dragging, isDrop, itemIsDragging, elements, setElements };
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import ReactFlow, {
   ReactFlowProvider,
   addEdge,
@@ -10,6 +10,8 @@ import Industry from "./Industry";
 import Forest from "./Forest";
 import { useStore } from "../Context";
 import { useDrop } from "react-dnd";
+import { setElementsStore } from "../app/UISlice";
+import { useSelector, useDispatch } from "react-redux";
 
 const initialElements = [];
 
@@ -27,12 +29,19 @@ const nodeTypes = {
 
 const Middle = () => {
   const { itemIsDragging } = useStore();
+  const dispatch = useDispatch();
 
+  const elementsStore = useSelector((state) => state.ui.elements);
   const [rfInstance, setRfInstance] = useState(null);
   const [bgColor, setBgColor] = useState(initBgColor);
   const [elements, setElements] = useState(initialElements);
   console.log("elements: ", elements);
   const [elementClick, setElementClick] = useState({});
+
+  useEffect(() => {
+    const action = setElementsStore(elements);
+    dispatch(action);
+  }, [elements, dispatch]);
 
   const onElementsRemove = useCallback((id) => {
     console.log("id: ", id);
@@ -99,20 +108,20 @@ const Middle = () => {
 
   const drawConnector = useCallback(
     (id) => {
-      console.log(`elementsDrawConnector`, elements);
       console.log("id: ", id);
-      const idElementDimension = elements.find((el) => {
+      console.log("elementsStore: ", elementsStore);
+      const idElementDimension = elementsStore.find((el) => {
         const idElSlice = el.id.split("_")[0];
         return idElSlice === id;
       });
       console.log("elementDimension: ", idElementDimension);
 
-      const idElementYear = elements.find((el) => {
+      const idElementYear = elementsStore.find((el) => {
         const idElSlice = el.id.split("_")[0];
         return idElSlice === "year";
       });
       console.log("elementYear: ", idElementYear);
-      const idElementCity = elements.find((el) => {
+      const idElementCity = elementsStore.find((el) => {
         const idElSlice = el.id.split("_")[0];
         return idElSlice === "city";
       });
@@ -131,7 +140,7 @@ const Middle = () => {
         );
       }
     },
-    [elements, onAddConnector]
+    [elementsStore, onAddConnector]
   );
 
   const [, dropList] = useDrop({
